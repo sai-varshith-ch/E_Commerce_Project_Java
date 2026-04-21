@@ -19,5 +19,9 @@ COPY --from=build /app/target/ecommerce-monolith-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
+<<<<<<< HEAD
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
+=======
+ENTRYPOINT ["java", "-jar", "app.jar"]
+>>>>>>> 5162e56 (fix: update deprecated openjdk images to eclipse-temurin)
