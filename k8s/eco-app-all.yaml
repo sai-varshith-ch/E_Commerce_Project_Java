@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eco-m-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eco-m
+  template:
+    metadata:
+      labels:
+        app: eco-m
+    spec:
+      containers:
+      - name: eco-m-container
+        image: varshithchikati/eco-m-app:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_USERNAME
+          value: user  # Or whatever user you defined
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: password
+        - name: POSTGRES_DB
+          value: ecommerce_db
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres-service:5432/ecommerce_db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eco-m-service
+spec:
+  type: NodePort
+  selector:
+    app: eco-m
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30001
+

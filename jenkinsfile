@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    
+    environment {
+        // Replace with your Docker Hub username
+        DOCKER_HUB_USER = "varshithchikati"
+        APP_NAME = "eco-m-app"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                // This runs your Maven build inside Jenkins
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+        stage('Build & Push Docker Image') {
+            steps {
+                script {
+                    // Use the ID 'docker-creds' we created in Step 1
+                    withCredentials([usernamePassword(credentialsId: 'docker-creds', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        sh "docker build -t ${DOCKER_HUB_USER}/${APP_NAME}:latest ."
+                        sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                        sh "docker push ${DOCKER_HUB_USER}/${APP_NAME}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to K3s') {
+            steps {
+                // This tells your K3s cluster to pull the new image and restart the pods
+                sh "kubectl rollout restart deployment/eco-m-deployment"
+            }
+        }
+    }
+}
