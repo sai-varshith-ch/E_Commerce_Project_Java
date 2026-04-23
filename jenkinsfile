@@ -35,10 +35,13 @@ pipeline {
         }
 
         stage('Deploy to K3s') {
-            steps {
-                // Use the --kubeconfig flag directly in the command
-                sh "kubectl --kubeconfig=/var/lib/jenkins/.kube/config rollout restart deployment/eco-m-deployment"
-            }
-        }
+            environment {
+                // This forces the environment for this specific stage
+                KUBECONFIG = "/var/lib/jenkins/.kube/config"
+    }
+    steps {
+        sh "kubectl rollout restart deployment/eco-m-deployment"
+    }
+}
     }
 }
