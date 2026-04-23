@@ -33,12 +33,12 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to K3s') {
             steps {
-        // We set the variable AND use the --kubeconfig flag in one line
-        sh "export KUBECONFIG=/var/lib/jenkins/.kube/config && kubectl --kubeconfig=/var/lib/jenkins/.kube/config rollout restart deployment/eco-m-deployment"
+                 withCredentials([file(credentialsId: 'k3s-config', variable: 'KUBECONFIG')]) {
+                     sh "kubectl rollout restart deployment/eco-m-deployment"
+          }
        }
-    }
+}
     }
 }
