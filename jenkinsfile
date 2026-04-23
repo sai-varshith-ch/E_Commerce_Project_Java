@@ -35,12 +35,9 @@ pipeline {
         }
 
         stage('Deploy to K3s') {
-             environment {
-                 KUBECONFIG = "/var/lib/jenkins/.kube/config"
-            }
             steps {
-                // This tells your K3s cluster to pull the new image and restart the pods
-                sh "kubectl rollout restart deployment/eco-m-deployment"
+                // Use the --kubeconfig flag directly in the command
+                sh "kubectl --kubeconfig=/var/lib/jenkins/.kube/config rollout restart deployment/eco-m-deployment"
             }
         }
     }
